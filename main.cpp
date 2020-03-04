@@ -20,19 +20,25 @@ int main(int argc, char* argv[]) {
     gr.cells_list.push_back("g");
     gr.cells_list.push_back("h");
 
-    gr.initialPosition(gr.cells_list);
+    gr.initialPlacement(gr.cells_list);
 
-    gr.addConection("a", "c");
-    gr.addConection("b", "c");
-    gr.addConection("d", "f");
-    gr.addConection("e", "f");
-    gr.addConection("c", "g");
-    gr.addConection("f", "g");
-    gr.addConection("g", "h");
+    gr.addToNetlist("a", "c");
+    gr.addToNetlist("b", "c");
+    gr.addToNetlist("d", "f");
+    gr.addToNetlist("e", "f");
+    gr.addToNetlist("c", "g");
+    gr.addToNetlist("f", "g");
+    gr.addToNetlist("g", "h");
+
+    // cout << "\n" << endl;
 
     for(int i = 0; i < gr.rows; i++) {
         for(int j = 0; j < gr.columns; j++)
             cout << gr.cell_map[i+j*gr.columns] << " ";
         cout << endl;
     }
+
+    cout << endl;
+
+    gr.randomIterativeImprovementPlace(gr.cells_list);
 }
