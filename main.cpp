@@ -1,4 +1,5 @@
 #include <iostream>
+#include <time.h>
 #include "graph.h"
 
 using namespace std;
@@ -34,11 +35,35 @@ int main(int argc, char* argv[]) {
 
     for(int i = 0; i < gr.rows; i++) {
         for(int j = 0; j < gr.columns; j++)
-            cout << gr.cell_map[i+j*gr.columns] << " ";
+            cout << gr.cell_number_map[i+j*gr.columns] << " ";
         cout << endl;
     }
 
     cout << endl;
+    
+    int total_HPWL = 0;
+    for(auto& netlist : gr.netlist_map) {
+        // gr.healfPerimeterWireLength(netlist.first, netlist.second);
+        total_HPWL += gr.healfPerimeterWireLength(netlist.first, netlist.second);
+    }
+    cout << total_HPWL << "\n" << endl;
 
-    gr.randomIterativeImprovementPlace(gr.cells_list);
+    clock_t t_begin, t_end, t_result;
+    int cont = 0;
+    t_result = 0;
+    t_begin = clock();
+    while(cont < 500) {
+        gr.randomIterativeImprovementPlace();
+        cont++;
+        
+        t_end = clock();
+        t_result = ((t_end - t_begin) / (CLOCKS_PER_SEC / 1000));
+    }
+
+    total_HPWL = 0;
+    for(auto& netlist : gr.netlist_map) {
+        // gr.healfPerimeterWireLength(netlist.first, netlist.second);
+        total_HPWL += gr.healfPerimeterWireLength(netlist.first, netlist.second);
+    }
+    cout << total_HPWL << "\n" << endl;
 }
