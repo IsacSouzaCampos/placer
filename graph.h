@@ -18,7 +18,8 @@ class Graph {
     int randomIterativeImprovementPlace();
     void swap(string cell1, string cell2);
     list<string> cells_list;
-    map<int, string> cell_number_map;
+    map<int, string> get_id_from_int;
+    map<string, int> get_int_from_id;
     map<string, list<string>> netlist_map;
     map<string, pair<int, int>> cell_position_map;
     // map<int, string> cell_number_map;

@@ -19,9 +19,10 @@ void Graph::addCell(string cell_id, int row, int column) {
     try {
         if(row > rows-1 || column > columns-1)
             throw 1;
-        cell_number_map[number_of_cells++] = cell_id;
+        get_int_from_id[cell_id] = number_of_cells;
+        get_id_from_int[number_of_cells++] = cell_id;
         cell_position_map[cell_id] = make_pair(row, column);
-        // cell_number_map[number_of_cells++] = cell_id;
+        // get_id_from_int[number_of_cells++] = cell_id;
     } catch(exception& e) {
         cout << "erro: " << e.what() << endl;
     } catch(int e) {
@@ -63,39 +64,46 @@ int Graph::randomIterativeImprovementPlace() {
     srand(clock());
     int rand1 = rand() % number_of_cells;
     int rand2 = rand() % number_of_cells;
-    string cell1 = cell_number_map[rand1];
-    string cell2 = cell_number_map[rand2];
-    cout << "cell1: " << cell1 << " - " << rand1 << endl;
-    cout << "cell2: " << cell2 << " - " << rand2 << endl;
+    string cell1 = get_id_from_int[rand1];
+    string cell2 = get_id_from_int[rand2];
 
     int initial_HPWL1 = healfPerimeterWireLength(cell1, netlist_map[cell1]);
     int initial_HPWL2 = healfPerimeterWireLength(cell2, netlist_map[cell2]);
-    cout << "\ninitial_HPWL1: " << initial_HPWL1 << endl;
-    cout << "initial_HPWL2: " << initial_HPWL2 << endl;
 
     int final_HPWL1 = healfPerimeterWireLength(cell2, netlist_map[cell1]);
     int final_HPWL2 = healfPerimeterWireLength(cell1, netlist_map[cell2]);
-    cout << "\nfinal_HPWL1: " << final_HPWL1 << endl;
-    cout << "final_HPWL2: " << final_HPWL2 << endl;
 
     int initial_total_HPWL = initial_HPWL1 + initial_HPWL2;
     int final_total_HPWL = final_HPWL1 + final_HPWL2;
-    cout << "\ninitial_total_HPWL: " << initial_total_HPWL << endl;
-    cout << "final_total_HPWL: " << final_total_HPWL << endl;
 
     if(final_total_HPWL < initial_total_HPWL) {
         swap(cell1, cell2);
         return 1;
     }
-    cout << "--------------" << endl;
+
+    // cout << "cell1: " << cell1 << " - " << rand1 << endl;
+    // cout << "cell2: " << cell2 << " - " << rand2 << endl;
+    // cout << "\ninitial_HPWL1: " << initial_HPWL1 << endl;
+    // cout << "initial_HPWL2: " << initial_HPWL2 << endl;
+    // cout << "\nfinal_HPWL1: " << final_HPWL1 << endl;
+    // cout << "final_HPWL2: " << final_HPWL2 << endl;
+    // cout << "\ninitial_total_HPWL: " << initial_total_HPWL << endl;
+    // cout << "final_total_HPWL: " << final_total_HPWL << endl;
+    // cout << "--------------" << endl;
     return 0;
 }
 
 void Graph::swap(string cell1, string cell2) {
-    cout << "swap" << endl;
-    pair<int, int> temp = cell_position_map[cell1];
+    // cout << "swap" << endl;
+    pair<int, int> pair_temp = cell_position_map[cell1];
     cell_position_map[cell1] = cell_position_map[cell2];
-    cell_position_map[cell2] = temp;
+    cell_position_map[cell2] = pair_temp;
 
+    int int_temp = get_int_from_id[cell1];
+    get_int_from_id[cell1] = get_int_from_id[cell2];
+    get_int_from_id[cell2] = int_temp;
 
+    string string_temp = get_id_from_int[get_int_from_id[cell1]];
+    get_id_from_int[get_int_from_id[cell1]] = get_id_from_int[get_int_from_id[cell2]];
+    get_id_from_int[get_int_from_id[cell2]] = string_temp;
 }
