@@ -1,17 +1,25 @@
 #include <iostream>
 #include <math.h>
-#include<time.h> 
+#include <time.h>
+#include <vector>
 #include "graph.h"
 
 Graph::Graph() = default;
 
 void Graph::initialPlacement(list<string> list) {
-    int i = 0, j = 0;
-    for(auto& list_ : list) {
-        addCell(list_, i%rows, j%columns);
-        cout << list_ << " " << i%rows << " " << j%columns << endl;
-        if(!(++j%columns))
-            ++i;
+    vector<pair<int, int>> grid_vec;
+    int count = rows*columns;
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < columns; j++) {
+            grid_vec.emplace_back(make_pair(i, j));
+        }
+    }
+
+    for(auto& l : list) {
+        srand(clock());
+        int random = rand()%count--;
+        addCell(l, gridVec[random].first, gridVec[random].second);
+        grid_vec[random] = grid_vec[count];
     }
 }
 
@@ -61,7 +69,7 @@ int Graph::healfPerimeterWireLength(string main_cell, list<string> netlist) {
 }
 
 int Graph::randomIterativeImprovementPlace() {
-    srand(clock());
+    srand(clock()); // pra mudar sequencia de valores aleatorios
     int rand1 = rand() % number_of_cells;
     int rand2 = rand() % number_of_cells;
     string cell1 = get_id_from_int[rand1];

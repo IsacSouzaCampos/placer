@@ -4,13 +4,22 @@
 
 using namespace std;
 
+void printGrids() {
+    for(int )
+}
+
 int main(int argc, char* argv[]) {
     Graph gr = Graph();
     cout << "linhas: " << flush;
     cin >> gr.rows;
     cout << "colunas: " << flush;
     cin >> gr.columns;
-    // int grid[gr.rows][gr.columns] = {};
+    
+    for(int i = 0; i < gr.rows; i++) {
+        for(int j = 0; j < gr.columns; j++) {
+            gr.isGridAvailable[make_pair(i, j)] = true;
+        }
+    }
 
     gr.cells_list.push_back("a");
     gr.cells_list.push_back("b");

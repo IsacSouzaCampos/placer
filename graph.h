@@ -22,6 +22,8 @@ class Graph {
     map<string, int> get_int_from_id;
     map<string, list<string>> netlist_map;
     map<string, pair<int, int>> cell_position_map;
+    map<pair<int, int>, string> grid_map;
+    map<pair<int, int>, bool> isGridAvailable;
     // map<int, string> cell_number_map;
     int number_of_cells{0};
 };
