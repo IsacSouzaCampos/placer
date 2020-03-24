@@ -4,23 +4,35 @@
 
 using namespace std;
 
-void printGrids() {
-    for(int )
+void printGrids(int rows, int columns, map<pair<int, int>, string> grid_map) {
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < columns; j++) {
+            cout << grid_map[make_pair(i, j)] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
 }
 
 int main(int argc, char* argv[]) {
     Graph gr = Graph();
-    cout << "linhas: " << flush;
-    cin >> gr.rows;
-    cout << "colunas: " << flush;
-    cin >> gr.columns;
+    // cout << "linhas: " << flush;
+    // cin >> gr.rows;
+    // cout << "colunas: " << flush;
+    // cin >> gr.columns;
+    gr.rows = 5;
+    gr.columns = 5;
+
+    gr.number_of_grids = gr.rows*gr.columns;
     
     for(int i = 0; i < gr.rows; i++) {
         for(int j = 0; j < gr.columns; j++) {
-            gr.isGridAvailable[make_pair(i, j)] = true;
+            pair<int, int> grid = make_pair(i, j);
+            gr.isGridAvailable[grid] = true;
+            gr.grid_map[grid] = "_";
         }
     }
-
+    
     gr.cells_list.push_back("a");
     gr.cells_list.push_back("b");
     gr.cells_list.push_back("c");
@@ -31,6 +43,8 @@ int main(int argc, char* argv[]) {
     gr.cells_list.push_back("h");
 
     gr.initialPlacement(gr.cells_list);
+
+    printGrids(gr.rows, gr.columns, gr.grid_map);
 
     gr.addToNetlist("a", "c");
     gr.addToNetlist("b", "c");
@@ -45,15 +59,15 @@ int main(int argc, char* argv[]) {
         total_HPWL += gr.healfPerimeterWireLength(netlist.first, netlist.second);
     cout << "\n" << total_HPWL << "\n" << endl;
 
-    for(auto& a : gr.get_id_from_int)
-        cout << a.first << " - " << a.second << endl;
-    cout << endl;
+    // for(auto& a : gr.get_id_from_int)
+    //     cout << a.first << " - " << a.second << endl;
+    // cout << endl;
 
     clock_t t_begin, t_end, t_result;
     int cont = 0;
     t_result = 0;
     t_begin = clock();
-    while(cont < 5000) {
+    while(cont < 50000) {
         if(!gr.randomIterativeImprovementPlace())
             cont++;
         
@@ -66,9 +80,12 @@ int main(int argc, char* argv[]) {
         total_HPWL += gr.healfPerimeterWireLength(netlist.first, netlist.second);
     cout << total_HPWL << "\n" << endl;
 
-    for(int i = 0; i < gr.rows; i++) {
-        for(int j = 0; j < gr.columns; j++)
-            cout << gr.get_id_from_int[j+i*gr.columns] << " ";
-        cout << endl;
-    }
+    // for(int i = 0; i < gr.rows; i++) {
+    //     for(int j = 0; j < gr.columns; j++)
+    //         cout << gr.get_id_from_int[j+i*gr.columns] << " ";
+    //     cout << endl;
+    // }
+
+    printGrids(gr.rows, gr.columns, gr.grid_map);
+
 }
