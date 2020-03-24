@@ -4,10 +4,10 @@
 
 using namespace std;
 
-void printGrids(int rows, int columns, map<pair<int, int>, string> grid_map) {
+void printGrids(int rows, int columns, map<pair<int, int>, string> position_content) {
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < columns; j++) {
-            cout << grid_map[make_pair(i, j)] << " ";
+            cout << position_content[make_pair(i, j)] << " ";
         }
         cout << endl;
     }
@@ -29,10 +29,10 @@ int main(int argc, char* argv[]) {
         for(int j = 0; j < gr.columns; j++) {
             pair<int, int> grid = make_pair(i, j);
             gr.isGridAvailable[grid] = true;
-            gr.grid_map[grid] = "_";
+            gr.position_content[grid] = "_";
         }
     }
-    
+
     gr.cells_list.push_back("a");
     gr.cells_list.push_back("b");
     gr.cells_list.push_back("c");
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 
     gr.initialPlacement(gr.cells_list);
 
-    printGrids(gr.rows, gr.columns, gr.grid_map);
+    printGrids(gr.rows, gr.columns, gr.position_content);
 
     gr.addToNetlist("a", "c");
     gr.addToNetlist("b", "c");
@@ -55,29 +55,21 @@ int main(int argc, char* argv[]) {
     gr.addToNetlist("g", "h");
     
     int total_HPWL = 0;
-    for(auto& netlist : gr.netlist_map)
-        total_HPWL += gr.healfPerimeterWireLength(netlist.first, netlist.second);
+    for(auto& cell : gr.cells_list)
+        total_HPWL += gr.healfPerimeterWireLength(gr.cell_position[cell], gr.netlist_map[cell]);
     cout << "\n" << total_HPWL << "\n" << endl;
 
     // for(auto& a : gr.get_id_from_int)
     //     cout << a.first << " - " << a.second << endl;
     // cout << endl;
 
-    clock_t t_begin, t_end, t_result;
-    int cont = 0;
-    t_result = 0;
-    t_begin = clock();
-    while(cont < 50000) {
-        if(!gr.randomIterativeImprovementPlace())
-            cont++;
-        
-        t_end = clock();
-        t_result = ((t_end - t_begin) / (CLOCKS_PER_SEC / 1000));
+    for(auto& cell : gr.cells_list) {
+        gr.randomIterativeImprovementPlace(cell);
     }
 
     total_HPWL = 0;
-    for(auto& netlist : gr.netlist_map)
-        total_HPWL += gr.healfPerimeterWireLength(netlist.first, netlist.second);
+    for(auto& cell : gr.cells_list)
+        total_HPWL += gr.healfPerimeterWireLength(gr.cell_position[cell], gr.netlist_map[cell]);
     cout << total_HPWL << "\n" << endl;
 
     // for(int i = 0; i < gr.rows; i++) {
@@ -86,6 +78,6 @@ int main(int argc, char* argv[]) {
     //     cout << endl;
     // }
 
-    printGrids(gr.rows, gr.columns, gr.grid_map);
+    printGrids(gr.rows, gr.columns, gr.position_content);
 
 }

@@ -22,7 +22,7 @@ void Graph::initialPlacement(list<string> list) {
         int second = grid_vec[random].second;
         
         addCell(l, first, second);
-        grid_map[make_pair(first, second)] = l;
+        position_content[make_pair(first, second)] = l;
 
         grid_vec[random] = grid_vec[count];
     }
@@ -34,7 +34,7 @@ void Graph::addCell(string cell_id, int row, int column) {
             throw 1;
         // get_int_from_id[cell_id] = number_of_cells;
         // get_id_from_int[number_of_cells++] = cell_id;
-        grid_position_map[cell_id] = make_pair(row, column);
+        cell_position[cell_id] = make_pair(row, column);
         // get_id_from_int[number_of_cells++] = cell_id;
     } catch(exception& e) {
         cout << "erro: " << e.what() << endl;
@@ -48,22 +48,22 @@ void Graph::addToNetlist(string cell1, string cell2) {
     netlist_map[cell2].push_back(cell1);
 }
 
-int Graph::healfPerimeterWireLength(string main_cell, list<string> netlist) {
-    int x_min = grid_position_map[main_cell].first, y_min = grid_position_map[main_cell].second;
+int Graph::healfPerimeterWireLength(pair<int, int> position, list<string> netlist) {
+    int x_min = position.first, y_min = position.second;
     int x_max = x_min, y_max = y_min;
 
     try {
-        for(auto& net : netlist) {
-            // cout << grid_position_map[net].first << endl;
-            if(grid_position_map[net].first > x_max)
-                x_max = grid_position_map[net].first;
-            if(grid_position_map[net].first < x_min)
-                x_min = grid_position_map[net].first;
-            // cout << grid_position_map[net].second << endl;
-            if(grid_position_map[net].second > y_max)
-                y_max = grid_position_map[net].second;
-            if(grid_position_map[net].second < y_min)
-                y_min = grid_position_map[net].second;
+        for(auto& cell : netlist) {
+            // cout << cell_position[net].first << endl;
+            if(cell_position[cell].first > x_max)
+                x_max = cell_position[cell].first;
+            if(cell_position[cell].first < x_min)
+                x_min = cell_position[cell].first;
+            // cout << cell_position[cell].second << endl;
+            if(cell_position[cell].second > y_max)
+                y_max = cell_position[cell].second;
+            if(cell_position[cell].second < y_min)
+                y_min = cell_position[cell].second;
         }
     } catch(exception e) {
         cout << "erro: " << e.what() << endl;
@@ -73,56 +73,33 @@ int Graph::healfPerimeterWireLength(string main_cell, list<string> netlist) {
     return (x_max-x_min)+(y_max-y_min);
 }
 
-int Graph::randomIterativeImprovementPlace() {
-    srand(clock()); // pra mudar sequencia de valores aleatorios
-    int x1 = rand() % rows, y1 = rand() % columns;
-    int x2 = rand() % rows, y2 = rand() % columns;
-    string grid1 = grid_map[make_pair(x1, y1)];
-    string grid2 = grid_map[make_pair(x2, y2)];
+void Graph::randomIterativeImprovementPlace(string cell) {
+    pair<int, int> current_position = cell_position[cell];
 
-    if( !grid1.compare("_") && !grid2.compare("_") )
-        return 0;
+    for(int i = 0; i < 10; i++) {
+        srand(clock()); // pra mudar sequencia de valores aleatorios
+        int x = rand() % rows, y = rand() % columns;
+        pair<int, int> new_position = make_pair(x, y);
 
-    int initial_HPWL1 = healfPerimeterWireLength(grid1, netlist_map[grid1]);
-    int initial_HPWL2 = healfPerimeterWireLength(grid2, netlist_map[grid2]);
+        int initial_HPWL = healfPerimeterWireLength(current_position, netlist_map[cell]);
+        int final_HPWL = healfPerimeterWireLength(new_position, netlist_map[cell]);
 
-    int final_HPWL1 = healfPerimeterWireLength(grid2, netlist_map[grid1]);
-    int final_HPWL2 = healfPerimeterWireLength(grid1, netlist_map[grid2]);
-
-    int initial_total_HPWL = initial_HPWL1 + initial_HPWL2;
-    int final_total_HPWL = final_HPWL1 + final_HPWL2;
-
-    if(final_total_HPWL < initial_total_HPWL) {
-        swap(grid1, grid2);
-        return 1;
+        if(final_HPWL < initial_HPWL && final_HPWL > 0) {
+            swap(current_position, new_position);
+            current_position = cell_position[cell];
+        }
     }
-
-    // cout << "cell1: " << cell1 << " - " << rand1 << endl;
-    // cout << "cell2: " << cell2 << " - " << rand2 << endl;
-    // cout << "\ninitial_HPWL1: " << initial_HPWL1 << endl;
-    // cout << "initial_HPWL2: " << initial_HPWL2 << endl;
-    // cout << "\nfinal_HPWL1: " << final_HPWL1 << endl;
-    // cout << "final_HPWL2: " << final_HPWL2 << endl;
-    // cout << "\ninitial_total_HPWL: " << initial_total_HPWL << endl;
-    // cout << "final_total_HPWL: " << final_total_HPWL << endl;
-    // cout << "--------------" << endl;
-    return 0;
 }
 
-void Graph::swap(string grid1, string grid2) {
+void Graph::swap(pair<int, int> current_position, pair<int, int> new_position) {
     // cout << "swap" << endl;
-    grid_map[grid_position_map[grid1]] = grid2;
-    grid_map[grid_position_map[grid2]] = grid1;
+    string current_content = position_content[current_position];
+    string new_content = position_content[new_position]; 
 
-    pair<int, int> pair_temp = grid_position_map[grid1];
-    grid_position_map[grid1] = grid_position_map[grid2];
-    grid_position_map[grid2] = pair_temp;
+    string temp_str = position_content[current_position];
+    position_content[current_position] = position_content[new_position];
+    position_content[new_position] = temp_str;
 
-    // int int_temp = get_int_from_id[grid1];
-    // get_int_from_id[grid1] = get_int_from_id[grid2];
-    // get_int_from_id[grid2] = int_temp;
-
-    // string string_temp = get_id_from_int[get_int_from_id[grid1]];
-    // get_id_from_int[get_int_from_id[grid1]] = get_id_from_int[get_int_from_id[grid2]];
-    // get_id_from_int[get_int_from_id[grid2]] = string_temp;
+    cell_position[current_content] = new_position;
+    cell_position[new_content] = current_position;
 }
