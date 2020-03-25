@@ -1,10 +1,19 @@
 #include <iostream>
-#include <math.h>
 #include <time.h>
 #include <vector>
 #include "graph.h"
 
 Graph::Graph() = default;
+
+void Graph::printGrids(int rows, int columns, map<pair<int, int>, string> position_content) {
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < columns; j++) {
+            cout << position_content[make_pair(i, j)] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
 
 void Graph::initialPlacement(list<string> list) {
     vector<pair<int, int>> grid_vec;
@@ -73,10 +82,11 @@ int Graph::healfPerimeterWireLength(pair<int, int> position, list<string> netlis
     return (x_max-x_min)+(y_max-y_min);
 }
 
-void Graph::randomIterativeImprovementPlace(string cell) {
+bool Graph::randomIterativeImprovementPlace(string cell, int temperature) {
+    bool decreased = false;
     pair<int, int> current_position = cell_position[cell];
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < rows*columns; i++) {
         srand(clock()); // pra mudar sequencia de valores aleatorios
         int x = rand() % rows, y = rand() % columns;
         pair<int, int> new_position = make_pair(x, y);
@@ -84,11 +94,27 @@ void Graph::randomIterativeImprovementPlace(string cell) {
         int initial_HPWL = healfPerimeterWireLength(current_position, netlist_map[cell]);
         int final_HPWL = healfPerimeterWireLength(new_position, netlist_map[cell]);
 
-        if(final_HPWL < initial_HPWL && final_HPWL > 0) {
+        int delta_l = final_HPWL - initial_HPWL;
+        if(delta_l < 0 && final_HPWL > 0) {
             swap(current_position, new_position);
             current_position = cell_position[cell];
+            decreased = true;
+        } else {
+            if(temperature > 0) {
+                double random = (double)rand()/RAND_MAX;
+                double result = exp((-delta_l)/temperature);
+                if(random < result) {
+                    // cout << "#" << endl;
+                    swap(current_position, new_position);
+                    current_position = cell_position[cell];
+                } else {
+                    // cout << "-" << endl;
+                }
+            }
         }
     }
+
+    return decreased;
 }
 
 void Graph::swap(pair<int, int> current_position, pair<int, int> new_position) {
@@ -102,4 +128,23 @@ void Graph::swap(pair<int, int> current_position, pair<int, int> new_position) {
 
     cell_position[current_content] = new_position;
     cell_position[new_content] = current_position;
+}
+
+void Graph::simulatedAnnealing() {
+    int temperature = 10000;
+    bool frozen = false;
+    bool decreased;
+
+    while(!frozen) {
+        decreased = false;
+        for(auto& cell : cells_list) {
+            if(randomIterativeImprovementPlace(cell, temperature))
+                decreased = true;
+        }
+        // printGrids(rows, columns, position_content);
+        if(decreased)
+            temperature = 0.9*temperature;
+        else
+            frozen = true;
+    }
 }

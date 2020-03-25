@@ -4,24 +4,14 @@
 
 using namespace std;
 
-void printGrids(int rows, int columns, map<pair<int, int>, string> position_content) {
-    for(int i = 0; i < rows; i++) {
-        for(int j = 0; j < columns; j++) {
-            cout << position_content[make_pair(i, j)] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
 int main(int argc, char* argv[]) {
     Graph gr = Graph();
     // cout << "linhas: " << flush;
     // cin >> gr.rows;
     // cout << "colunas: " << flush;
     // cin >> gr.columns;
-    gr.rows = 5;
-    gr.columns = 5;
+    gr.rows = 10;
+    gr.columns = 10;
 
     gr.number_of_grids = gr.rows*gr.columns;
     
@@ -44,7 +34,7 @@ int main(int argc, char* argv[]) {
 
     gr.initialPlacement(gr.cells_list);
 
-    printGrids(gr.rows, gr.columns, gr.position_content);
+    gr.printGrids(gr.rows, gr.columns, gr.position_content);
 
     gr.addToNetlist("a", "c");
     gr.addToNetlist("b", "c");
@@ -63,9 +53,7 @@ int main(int argc, char* argv[]) {
     //     cout << a.first << " - " << a.second << endl;
     // cout << endl;
 
-    for(auto& cell : gr.cells_list) {
-        gr.randomIterativeImprovementPlace(cell);
-    }
+    gr.simulatedAnnealing();
 
     total_HPWL = 0;
     for(auto& cell : gr.cells_list)
@@ -78,6 +66,6 @@ int main(int argc, char* argv[]) {
     //     cout << endl;
     // }
 
-    printGrids(gr.rows, gr.columns, gr.position_content);
+    gr.printGrids(gr.rows, gr.columns, gr.position_content);
 
 }
