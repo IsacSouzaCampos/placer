@@ -1,0 +1,17 @@
+10;10
+a
+b
+c
+d
+e
+f
+g
+h
+*
+a:c
+b:c
+d:f
+e:f
+c:g
+f:g
+g:h

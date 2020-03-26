@@ -1,9 +1,51 @@
 #include <iostream>
 #include <time.h>
-#include <vector>
+#include <fstream>
 #include "graph.h"
 
 Graph::Graph() = default;
+
+void Graph::readFile() {
+    string line;
+    ifstream myfile ("data.txt");
+    
+    if(myfile.is_open()) {
+        string line;
+        vector<string> order;
+
+        getline(myfile, line);
+        for(auto& v : split(line, ';')) order.push_back(v);
+        rows = stoi(order[0]);
+        columns = stoi(order[1]);
+
+        while(getline(myfile, line)) {
+            if(line == "*")
+                break;
+            cells_list.push_back(line);
+        }
+
+        while(getline(myfile, line)) {
+            vector<string> netlist;
+            for(auto& v : split(line, ':')) netlist.push_back(v);
+            for(auto& v : split(netlist[1], ';')) addToNetlist(netlist[0], v);
+        }
+    } else {
+        cout << "Unable to open file" << endl;
+    }
+}
+
+const vector<string> Graph::split(const string& str, const char& c) {
+    string buff{""};
+    vector<string> vec;
+
+    for(auto& element : str) {
+        if(element != c) buff += element;
+        else { vec.push_back(buff); buff = ""; }
+    }
+    if(buff != "") vec.push_back(buff);
+
+    return vec;
+}
 
 void Graph::printGrids(int rows, int columns, map<pair<int, int>, string> position_content) {
     for(int i = 0; i < rows; i++) {
@@ -30,25 +72,10 @@ void Graph::initialPlacement(list<string> list) {
         int first = grid_vec[random].first;
         int second = grid_vec[random].second;
         
-        addCell(l, first, second);
+        cell_position[l] = make_pair(first, second);
         position_content[make_pair(first, second)] = l;
 
         grid_vec[random] = grid_vec[count];
-    }
-}
-
-void Graph::addCell(string cell_id, int row, int column) {
-    try {
-        if(row > rows-1 || column > columns-1)
-            throw 1;
-        // get_int_from_id[cell_id] = number_of_cells;
-        // get_id_from_int[number_of_cells++] = cell_id;
-        cell_position[cell_id] = make_pair(row, column);
-        // get_id_from_int[number_of_cells++] = cell_id;
-    } catch(exception& e) {
-        cout << "erro: " << e.what() << endl;
-    } catch(int e) {
-        cout << "erro " << e << ": out of range" << endl;
     }
 }
 
@@ -104,11 +131,8 @@ bool Graph::randomIterativeImprovementPlace(string cell, int temperature) {
                 double random = (double)rand()/RAND_MAX;
                 double result = exp((-delta_l)/temperature);
                 if(random < result) {
-                    // cout << "#" << endl;
                     swap(current_position, new_position);
                     current_position = cell_position[cell];
-                } else {
-                    // cout << "-" << endl;
                 }
             }
         }
@@ -118,7 +142,6 @@ bool Graph::randomIterativeImprovementPlace(string cell, int temperature) {
 }
 
 void Graph::swap(pair<int, int> current_position, pair<int, int> new_position) {
-    // cout << "swap" << endl;
     string current_content = position_content[current_position];
     string new_content = position_content[new_position]; 
 
