@@ -24,6 +24,23 @@ void Graph::readFile() {
             cells_list.push_back(line);
         }
 
+        
+        getline(myfile, line);
+        for(auto& v : split(line, ':')) {
+            vector<string> in_out = split(v, '-');
+            vector<string> pos = split(in_out[1], ';');
+            inputs_and_outputs.push_back(in_out[0]);
+            cell_position[in_out[0]] = make_pair(stoi(pos[0]), stoi(pos[1]));
+        }
+        getline(myfile, line);
+        int c = 0;
+        for(auto& v : split(line, ':')) {
+            for(auto& cell : split(v, ';')) {
+                netlist_map[cell].push_back(inputs_and_outputs[c]);
+            }
+            ++c;
+        }
+
         while(getline(myfile, line)) {
             vector<string> netlist;
             for(auto& v : split(line, ':')) netlist.push_back(v);

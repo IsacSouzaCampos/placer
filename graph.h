@@ -22,6 +22,7 @@ class Graph {
     bool randomIterativeImprovementPlace(string cell, int temperature);
     void swap(pair<int, int> position1, pair<int, int> position2);
     void simulatedAnnealing();
+    vector<string> inputs_and_outputs;
     list<string> cells_list;
     map<string, list<string>> netlist_map;
     map<string, pair<int, int>> cell_position;

@@ -11,13 +11,11 @@ int main(int argc, char* argv[]) {
     gr.readFile();
     map<pair<int, int>, string> best_position_content;
     int best_hpwl;
-
-    int higher = gr.rows > gr.columns ? gr.rows : gr.columns;
     
-    for(int i = 0; i < higher; i++) {
+    for(int i = 0; i < gr.rows; i++) {
         for(int j = 0; j < gr.columns; j++) {
             pair<int, int> grid = make_pair(i, j);
-            gr.position_content[grid] = "_";
+            gr.position_content[grid] = "______";
         }
     }
 
@@ -28,7 +26,8 @@ int main(int argc, char* argv[]) {
     best_hpwl = total_hpwl(gr);
     cout << "\n" << best_hpwl << "\n" << endl;
 
-    for(int i = 0; i < gr.rows; i++) {
+    int higher = gr.rows > gr.columns ? gr.rows : gr.columns;
+    for(int i = 0; i < higher; i++) {
         cout << i << endl;
         gr.simulatedAnnealing();
         int current_hpwl = total_hpwl(gr);
