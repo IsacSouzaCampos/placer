@@ -26,33 +26,48 @@ void Graph::readFile() {
         rows = stoi(order[0]);
         columns = stoi(order[1]);
 
+        int c = 0;
         while(getline(myfile, line)) {
-            if(line == "*")
+            if(line == "#INPUTS/OUTPUTS#")
                 break;
             cells_list.push_back(line);
+            cell_number[line] = c++;
         }
 
-        getline(myfile, line);
-        for(auto& v : split(line, ':')) {
-            vector<string> in_out = split(v, '-');
+        // #INPUTS/OUTPUTS#
+        while(getline(myfile, line)) {
+            if(line == "#INPUTS/OUTPUTS CONNECTIONS#")
+                break;
+            vector<string> in_out = split(line, '-');
             vector<string> pos = split(in_out[1], ';');
             inputs_and_outputs.push_back(in_out[0]);
             cell_position[in_out[0]] = make_pair(stoi(pos[0]), stoi(pos[1]));
+            cell_number[in_out[0]] = c++;
         }
 
-        getline(myfile, line);
-        int c = 0;
-        for(auto& v : split(line, ':')) {
-            for(auto& cell : split(v, ';')) {
-                netlist_map[cell].push_back(inputs_and_outputs[c]);
+        // #INPUTS/OUTPUTS CONNECTIONS#
+        c = 0;
+        while(getline(myfile, line)) {
+            if(line == "#CONNECTIONS#")
+                break;
+            for(auto& cell : split(line, ';')) {
+                vector<string> c_w = split(cell, '/'); // cell::wire weight
+                netlist_map[c_w[0]].push_back(inputs_and_outputs[c]);
+                wire_pad_weight[make_pair(inputs_and_outputs[c], c_w[0])] = stoi(c_w[1]);
+                // wire_pad_weight[make_pair(c_w[0], inputs_and_outputs[c])] = stoi(c_w[1]);
             }
             ++c;
         }
 
+        // #CONNECTIONS#
         while(getline(myfile, line)) {
-            vector<string> netlist;
-            for(auto& v : split(line, ':')) netlist.push_back(v);
-            for(auto& v : split(netlist[1], ';')) addToNetlist(netlist[0], v);
+            vector<string> vec;
+            vector<string> cells;
+            for(auto& v : split(line, '/')) vec.push_back(v);
+            for(auto& v : split(vec[0], ':')) cells.push_back(v);
+            addToNetlist(cells[0], cells[1]);
+            wire_cell_weight[make_pair(cells[0], cells[1])] = stoi(vec[1]);
+            // wire_cell_weight[make_pair(cells[1], cells[0])] = stoi(vec[1]);
         }
     } else {
         cout << "Unable to open file" << endl;

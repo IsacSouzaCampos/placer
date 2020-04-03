@@ -5,10 +5,20 @@ xor_01
 and_00
 and_01
 and_02
-*
-A-1;0:B-3;0:Cin-5;0:S-2;9:Cout-7;9
-xor_01;and_01;and_02:xor_00;and_00;and_01:xor_00;and_00;and_02:xor_01:_or_00
-xor_00:xor_01
-and_00:_or_00
-and_01:_or_00
-and_02:_or_00
+#INPUTS/OUTPUTS#
+A-1;0
+B-3;0
+S-2;9
+Cin-5;0
+Cout-7;9
+#INPUTS/OUTPUTS CONNECTIONS#
+xor_01/1;and_01/1;and_02/1
+xor_00/1;and_00/1;and_01/1
+xor_01/1
+xor_00/1;and_00/1;and_02/1
+_or_00/1
+#CONNECTIONS#
+xor_00:xor_01/1
+and_00:_or_00/1
+and_01:_or_00/1
+and_02:_or_00/1

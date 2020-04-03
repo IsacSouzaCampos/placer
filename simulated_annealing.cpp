@@ -1,9 +1,6 @@
-#include <iostream>
 #include "simulated_annealing.h"
-#include "graph.h"
 
-SimulatedAnnealing::SimulatedAnnealing(Graph gr) {
-    // gr = graph;
+SimulatedAnnealing::SimulatedAnnealing() {
     map<pair<int, int>, string> best_position_content;
     int best_hpwl;
 
@@ -51,12 +48,6 @@ void SimulatedAnnealing::initialPlacement() {
 
         grid_vec[random] = grid_vec[count];
     }
-    // for(int i = 0; i < gr.rows; i++) {
-    //     for(int j = 0; j < gr.columns; j++) {
-    //         cout << gr.position_content[make_pair(i, j)] << " ";
-    //     }
-    //     cout << endl;
-    // }
 }
 
 int SimulatedAnnealing::halfPerimeterWireLength(pair<int, int> position, list<string> netlist) {

@@ -1,6 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <iostream>
 #include <map>
 #include <string>
 #include <list>
@@ -21,6 +22,9 @@ class Graph {
     map<string, list<string>> netlist_map;
     map<string, pair<int, int>> cell_position;
     map<pair<int, int>, string> position_content;
+    map<pair<string, string>, int> wire_cell_weight;
+    map<pair<string, string>, int> wire_pad_weight;
+    map<string, int> cell_number;
 };
 
 #endif

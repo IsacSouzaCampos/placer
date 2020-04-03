@@ -1,7 +1,7 @@
 all: program
 
 program: main.o graph.o simulated_annealing.o quadratic_placement.o
-	g++ -g3 main.o graph.o simulated_annealing.o -o program -fopenmp
+	g++ -g3 main.o graph.o simulated_annealing.o quadratic_placement.o -o program -fopenmp
 
 main.o: main.cpp
 	g++ -g3 -c main.cpp -fopenmp
